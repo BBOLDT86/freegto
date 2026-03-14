@@ -1,0 +1,18 @@
+{
+  "name": "Free GTO",
+  "short_name": "Free GTO",
+  "description": "A beautifully designed poker strategy trainer. Master preflop ranges, push/fold charts, and equity calculations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f7",
+  "theme_color": "#f5f5f7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='22' width='100' height='100' fill='%23000'/><text x='50' y='68' text-anchor='middle' font-size='48' font-weight='700' fill='%23fff' font-family='system-ui'>G</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["games", "education"]
+}

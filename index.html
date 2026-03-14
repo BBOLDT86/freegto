@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f5f7">
+<meta name="description" content="Free GTO — A beautifully designed poker strategy trainer. Master preflop ranges, push/fold charts, and equity calculations.">
+<meta name="keywords" content="poker, GTO, game theory optimal, preflop ranges, push fold, equity calculator, poker trainer">
+<meta property="og:title" content="Free GTO — Poker Strategy Trainer">
+<meta property="og:description" content="Master preflop poker strategy with a beautifully designed GTO trainer. Free, forever.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://free-gto.com">
+<link rel="canonical" href="https://free-gto.com">
+<title>Free GTO — Poker Strategy Trainer</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='22' width='100' height='100' fill='%23000'/><text x='50' y='68' text-anchor='middle' font-size='48' font-weight='700' fill='%23fff' font-family='system-ui'>G</text></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=SF+Pro+Text:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Apple palette */
+  --bg-page: #f5f5f7;
+  --bg-card: #ffffff;
+  --bg-secondary: #f2f2f7;
+  --bg-tertiary: #e5e5ea;
+  --bg-input: #f2f2f7;
+  --bg-hover: rgba(0,0,0,0.03);
+  --bg-active: rgba(0,0,0,0.06);
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+  --text-quaternary: #c7c7cc;
+
+  --blue: #007aff;
+  --blue-soft: rgba(0,122,255,0.08);
+  --blue-mid: rgba(0,122,255,0.15);
+  --green: #34c759;
+  --green-soft: rgba(52,199,89,0.08);
+  --green-mid: rgba(52,199,89,0.15);
+  --red: #ff3b30;
+  --red-soft: rgba(255,59,48,0.08);
+  --red-mid: rgba(255,59,48,0.15);
+  --orange: #ff9500;
+  --orange-soft: rgba(255,149,0,0.08);
+  --orange-mid: rgba(255,149,0,0.15);
+  --purple: #af52de;
+  --purple-soft: rgba(175,82,222,0.08);
+  --yellow: #ffcc00;
+  --yellow-soft: rgba(255,204,0,0.1);
+  --teal: #5ac8fa;
+  --indigo: #5856d6;
+  --indigo-soft: rgba(88,86,214,0.08);
+
+  --border: rgba(0,0,0,0.06);
+  --border-strong: rgba(0,0,0,0.12);
+  --separator: rgba(60,60,67,0.12);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-card: 0 0.5px 0 rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+
+  --r: 14px;
+  --r-sm: 10px;
+  --r-xs: 8px;
+  --r-lg: 20px;
+  --r-pill: 100px;
+
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, monospace;
+
+  --nav-h: 50px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --topbar-h: 48px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { height:100%; overflow:hidden; }
+body {
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  height:100%; overflow:hidden;
+  display:flex; flex-direction:column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+/* ═══ TOP BAR ═══ */
+.topbar {
+  position:relative; z-index:200;
+  height: var(--topbar-h); min-height: var(--topbar-h);
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 16px;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--separator);
+}
+.brand { display:flex; align-items:center; gap:10px; }
+.brand-mark {
+  width:28px; height:28px; border-radius:7px;
+  background: var(--text-primary);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:#fff;
+  letter-spacing: -0.3px;
+}
+.brand-text { font-weight:600; font-size:17px; letter-spacing:-0.4px; color:var(--text-primary); }
+.brand-text em { font-style:normal; font-weight:700; }
+.topbar-actions { display:flex; gap:4px; align-items:center; }
+.icon-btn {
+  width:32px; height:32px; border-radius:var(--r-xs);
+  border:none; background:transparent;
+  color:var(--text-secondary); cursor:pointer; display:flex;
+  align-items:center; justify-content:center; font-size:16px;
+  transition: all 0.2s ease;
+}
+.icon-btn:hover { background:var(--bg-hover); color:var(--blue); }
+.icon-btn:active { background:var(--bg-active); transform:scale(0.94); }
+
+/* ═══ MAIN SCROLL AREA ═══ */
+.app-body {
+  flex:1; overflow:hidden; position:relative; z-index:1;
+  display:flex; flex-direction:column;
+}
+.tab-content {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding: 12px 16px 24px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-pane { display:none; animation: fadeUp 0.35s cubic-bezier(0.25,0.46,0.45,0.94); max-width:680px; margin:0 auto; width:100%; }
+.tab-pane.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+/* ═══ BOTTOM NAV ═══ */
+.bottom-nav {
+  position:relative; z-index:200;
+  display:flex;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--separator);
+  padding-bottom: var(--safe-b);
+  min-height: var(--nav-h);
+}
+.nav-item {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:2px; padding:4px 2px;
+  color:var(--text-tertiary); font-size:10px; font-weight:500;
+  letter-spacing:0; cursor:pointer;
+  transition: all 0.2s ease; border:none; background:none;
+  position:relative;
+}
+.nav-item svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.nav-item.active { color:var(--blue); }
+.nav-item:active { transform:scale(0.92); }
+
+/* ═══ CARDS ═══ */
+.card {
+  background:var(--bg-card);
+  border-radius:var(--r);
+  padding:16px;
+  margin-bottom:10px;
+  box-shadow: var(--shadow-card);
+  border: 0.5px solid var(--border);
+}
+.card-title {
+  font-size:13px; font-weight:600; color:var(--text-secondary);
+  letter-spacing:-0.1px; margin-bottom:12px;
+}
+.card-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+
+/* ═══ FORM CONTROLS ═══ */
+select, .input-sm {
+  background:var(--bg-input); color:var(--text-primary);
+  border:1px solid var(--border); border-radius:var(--r-xs);
+  padding:7px 10px; font-family:var(--font); font-size:13px;
+  cursor:pointer; outline:none; transition: all 0.2s ease;
+  -webkit-appearance:none; appearance:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23aeaeb2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+select:focus, .input-sm:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+
+input[type="range"] {
+  -webkit-appearance:none; width:100%; height:4px;
+  background: var(--bg-tertiary);
+  border-radius:2px; outline:none; cursor:pointer;
+  margin: 8px 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:22px; height:22px;
+  border-radius:50%; background:#fff;
+  box-shadow:0 0.5px 4px rgba(0,0,0,0.12), 0 0 0.5px rgba(0,0,0,0.16);
+  cursor:pointer; border:0.5px solid rgba(0,0,0,0.04);
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  transform:scale(1.1);
+  box-shadow:0 1px 8px rgba(0,0,0,0.16), 0 0 0.5px rgba(0,0,0,0.2);
+}
+
+textarea {
+  background:var(--bg-input); color:var(--text-primary);
+  border:1px solid var(--border); border-radius:var(--r-xs);
+  padding:10px 12px; font-family:var(--font); font-size:13px;
+  outline:none; resize:vertical; width:100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+textarea:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+
+.btn {
+  padding:8px 16px; border-radius:var(--r-xs);
+  border:none; background:var(--bg-secondary);
+  color:var(--text-primary); font-family:var(--font);
+  font-size:13px; font-weight:500; cursor:pointer;
+  transition:all 0.2s ease; white-space:nowrap;
+}
+.btn:hover { background:var(--bg-tertiary); }
+.btn:active { transform:scale(0.97); }
+.btn-accent {
+  background:var(--blue); color:#fff; font-weight:600;
+}
+.btn-accent:hover { background:#0071e3; }
+.btn-red { background:var(--red-soft); color:var(--red); }
+.btn-red:hover { background:var(--red-mid); }
+.btn-sm { padding:6px 12px; font-size:12px; }
+.btn-ghost { background:transparent; }
+.btn-ghost:hover { background:var(--bg-hover); }
+
+.label {
+  font-size:12px; font-weight:500; color:var(--text-secondary);
+  letter-spacing:0; margin-bottom:4px; display:block;
+}
+.mono { font-family:var(--mono); }
+.flex { display:flex; }
+.gap-sm { gap:6px; }
+.gap-md { gap:10px; }
+.gap-lg { gap:14px; }
+.wrap { flex-wrap:wrap; }
+.items-center { align-items:center; }
+.justify-between { justify-content:space-between; }
+.flex-1 { flex:1; }
+.text-blue { color:var(--blue); }
+.text-green { color:var(--green); }
+.text-red { color:var(--red); }
+.text-orange { color:var(--orange); }
+.text-muted { color:var(--text-secondary); }
+.text-xs { font-size:11px; }
+.text-sm { font-size:13px; }
+.mt-sm { margin-top:6px; }
+.mb-sm { margin-bottom:6px; }
+
+/* ═══ PLAYING CARDS ═══ */
+.pcard {
+  width:56px; height:80px; border-radius:10px;
+  background:#fff; color:var(--text-primary);
+  display:inline-flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:20px; font-weight:600;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0.5px 2px rgba(0,0,0,0.06);
+  position:relative; user-select:none;
+  border: 1px solid var(--border);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.pcard.red { color: var(--red); }
+.pcard .suit { font-size:14px; margin-top:-1px; }
+.pcard-sm { width:40px; height:58px; font-size:15px; border-radius:8px; }
+.pcard-sm .suit { font-size:11px; }
+
+/* ═══ RANGE GRID ═══ */
+.range-grid {
+  display:grid; grid-template-columns:repeat(13,1fr);
+  gap:2px; user-select:none;
+}
+.rcell {
+  aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:9px; font-weight:500;
+  border-radius:3px; cursor:default; transition:all 0.15s ease;
+  position:relative;
+}
+.rcell.raise { background:var(--blue); color:#fff; }
+.rcell.fold { background:var(--bg-secondary); color:var(--text-quaternary); }
+.rcell.marginal { background:var(--orange); color:#fff; }
+.rcell.call { background:var(--green); color:#fff; }
+.rcell.threebet { background:var(--indigo); color:#fff; }
+.rcell.fourbet { background:var(--red); color:#fff; }
+.rcell:hover { transform:scale(1.2); z-index:2; box-shadow:var(--shadow-md); border-radius:4px; }
+
+/* ═══ ACTION BUTTONS ═══ */
+.act-btn {
+  padding:14px 28px; border-radius:var(--r);
+  border:none; background:var(--bg-secondary);
+  color:var(--text-primary); font-family:var(--font);
+  font-size:15px; font-weight:600; cursor:pointer;
+  transition:all 0.2s ease; min-width:88px; text-align:center;
+  letter-spacing:-0.2px;
+}
+.act-btn:active { transform:scale(0.95); }
+.act-btn.raise-btn { background:var(--blue); color:#fff; }
+.act-btn.raise-btn:hover { background:#0071e3; }
+.act-btn.fold-btn { background:var(--red-soft); color:var(--red); }
+.act-btn.fold-btn:hover { background:var(--red-mid); }
+.act-btn.call-btn { background:var(--green-soft); color:var(--green); }
+.act-btn.call-btn:hover { background:var(--green-mid); }
+.act-btn.threebet-btn { background:var(--indigo-soft); color:var(--indigo); }
+.act-btn.threebet-btn:hover { background:rgba(88,86,214,0.15); }
+
+.feedback {
+  padding:14px 16px; border-radius:var(--r-sm);
+  font-size:13px; line-height:1.5; display:none; width:100%;
+  margin-top:12px;
+}
+.feedback.correct { display:block; background:var(--green-soft); color:#1a7d35; }
+.feedback.incorrect { display:block; background:var(--red-soft); color:#c0281e; }
+.feedback.marginal { display:block; background:var(--orange-soft); color:#a06800; }
+
+/* ═══ SCENARIO SEATS ═══ */
+.seat-row { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+.seat {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:6px 4px; border-radius:var(--r-xs);
+  background:var(--bg-secondary); border:1px solid var(--border);
+  min-width:50px;
+}
+.seat.hero { border-color:var(--blue); background:var(--blue-soft); }
+.seat .pos-label { font-size:10px; font-weight:600; color:var(--text-secondary); letter-spacing:0.2px; }
+.seat.hero .pos-label { color:var(--blue); }
+.seat select { font-size:10px; padding:2px 3px; width:50px; text-align:center; background:var(--bg-card); border-color:var(--border); }
+.seat-arrow { color:var(--text-quaternary); font-size:12px; }
+
+/* ═══ POS CHIPS ═══ */
+.pos-chip {
+  padding:5px 10px; border-radius:var(--r-pill); font-size:11px;
+  font-weight:500; background:var(--bg-secondary);
+  color:var(--text-secondary); border:1px solid var(--border);
+  cursor:pointer; transition:all 0.2s ease;
+}
+.pos-chip.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+.pos-chip:hover { border-color:var(--blue); }
+
+/* ═══ STAT CHIPS ═══ */
+.stat-chip {
+  background:var(--bg-secondary); border:1px solid var(--border);
+  border-radius:var(--r-pill); padding:5px 12px;
+  font-size:11px; color:var(--text-secondary);
+}
+.stat-chip strong { color:var(--text-primary); font-family:var(--mono); margin-left:3px; }
+
+/* ═══ LEGEND ═══ */
+.legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-secondary); }
+.legend-dot { width:10px; height:10px; border-radius:3px; }
+
+/* ═══ SCORE GRID ═══ */
+.score-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.score-box { text-align:center; padding:14px 10px; background:var(--bg-secondary); border-radius:var(--r-sm); }
+.score-val { font-family:var(--mono); font-size:24px; font-weight:700; color:var(--blue); letter-spacing:-0.5px; }
+.score-label { font-size:11px; color:var(--text-secondary); margin-top:2px; font-weight:500; }
+
+/* ═══ HISTORY ═══ */
+.hist-entry {
+  display:flex; align-items:center; gap:6px;
+  padding:6px 0; border-bottom:0.5px solid var(--separator); font-size:12px;
+}
+.hist-entry:last-child { border:none; }
+.hist-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.hist-dot.ok { background:var(--green); }
+.hist-dot.no { background:var(--red); }
+.hist-hand { font-family:var(--mono); color:var(--text-primary); font-weight:500; }
+.hist-meta { color:var(--text-secondary); font-size:11px; }
+.hist-result { color:var(--text-secondary); margin-left:auto; font-size:11px; }
+
+/* ═══ PUSH/FOLD CHART ═══ */
+.pf-table { width:100%; border-collapse:separate; border-spacing:2px; font-size:11px; }
+.pf-table th { background:var(--bg-secondary); color:var(--text-secondary); font-weight:600; padding:7px 4px; text-align:center; border-radius:4px; font-size:10px; }
+.pf-table td { padding:6px 4px; text-align:center; font-family:var(--mono); font-size:10px; border-radius:4px; }
+.pf-table td.push { background:var(--blue-soft); color:var(--blue); font-weight:600; }
+.pf-table td.fold { background:transparent; color:var(--text-quaternary); }
+
+/* ═══ SESSION LOG ═══ */
+.session-entry {
+  display:flex; align-items:center; gap:10px;
+  padding:12px; background:var(--bg-secondary); border-radius:var(--r-sm);
+  margin-bottom:6px;
+}
+.session-result { font-family:var(--mono); font-weight:700; font-size:14px; min-width:64px; text-align:right; letter-spacing:-0.3px; }
+.session-result.pos { color:var(--green); }
+.session-result.neg { color:var(--red); }
+.session-meta { flex:1; }
+.session-meta .event-name { font-size:13px; font-weight:600; }
+.session-meta .event-detail { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+
+/* ═══ OPPONENT NOTES ═══ */
+.opp-card {
+  padding:12px; background:var(--bg-secondary); border-radius:var(--r-sm);
+  margin-bottom:6px;
+}
+.opp-header { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.opp-avatar {
+  width:30px; height:30px; border-radius:50%;
+  background:var(--bg-tertiary); display:flex; align-items:center;
+  justify-content:center; font-size:13px; font-weight:700; color:var(--text-secondary);
+}
+.opp-name { font-weight:600; font-size:14px; }
+.opp-tags { display:flex; gap:4px; flex-wrap:wrap; }
+.opp-tag {
+  padding:3px 8px; border-radius:var(--r-pill); font-size:10px;
+  font-weight:600;
+}
+.tag-tight { background:var(--blue-soft); color:var(--blue); }
+.tag-loose { background:var(--red-soft); color:var(--red); }
+.tag-passive { background:var(--purple-soft); color:var(--purple); }
+.tag-aggro { background:var(--orange-soft); color:var(--orange); }
+.tag-fish { background:var(--yellow-soft); color:#997a00; }
+.tag-reg { background:var(--green-soft); color:var(--green); }
+.tag-nit { background:var(--indigo-soft); color:var(--indigo); }
+.opp-notes { font-size:12px; color:var(--text-secondary); margin-top:4px; line-height:1.5; }
+
+/* ═══ EQUITY VIZ ═══ */
+.eq-bar-wrap { height:28px; background:var(--bg-secondary); border-radius:var(--r-xs); overflow:hidden; display:flex; margin:10px 0; }
+.eq-bar { height:100%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; transition:width 0.4s cubic-bezier(0.25,0.46,0.45,0.94); }
+
+/* ═══ BANKROLL ═══ */
+.br-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+.br-box { text-align:center; padding:14px 10px; background:var(--bg-secondary); border-radius:var(--r-sm); }
+.br-val { font-family:var(--mono); font-size:20px; font-weight:700; letter-spacing:-0.3px; }
+.br-label { font-size:11px; color:var(--text-secondary); margin-top:2px; font-weight:500; }
+
+/* ═══ SYNC PANEL ═══ */
+.peer-id {
+  font-family:var(--mono); font-size:15px; font-weight:600;
+  color:var(--blue); padding:10px 14px;
+  background:var(--blue-soft); border-radius:var(--r-sm);
+  text-align:center; letter-spacing:1px;
+  cursor:pointer; user-select:all;
+  transition: background 0.2s;
+}
+.peer-id:hover { background:var(--blue-mid); }
+
+/* ═══ MODAL ═══ */
+.modal-overlay {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,0.3); backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  display:none; align-items:center; justify-content:center;
+  padding:16px;
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background:var(--bg-card);
+  border-radius:var(--r-lg); padding:24px; width:100%;
+  max-width:420px; max-height:80vh; overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  animation: modalIn 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(12px)} to{opacity:1;transform:none} }
+.modal h3 { font-size:17px; font-weight:700; margin-bottom:14px; letter-spacing:-0.2px; }
+
+/* ═══ TOAST ═══ */
+.toast {
+  position:fixed; bottom:calc(var(--nav-h) + var(--safe-b) + 12px);
+  left:50%; transform:translateX(-50%) translateY(60px);
+  background:var(--text-primary); color:#fff;
+  padding:10px 22px; border-radius:var(--r-pill);
+  font-size:13px; font-weight:600; z-index:600;
+  opacity:0; transition:all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  pointer-events:none;
+  box-shadow:var(--shadow-lg);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--bg-tertiary); border-radius:3px; }
+
+/* ═══ TOGGLE SWITCH ═══ */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid var(--separator); }
+.toggle-row:last-child { border:none; }
+.toggle-info { font-size:14px; font-weight:500; }
+.toggle-desc { font-size:12px; color:var(--text-secondary); margin-top:1px; }
+.toggle-switch {
+  width:42px; height:26px; border-radius:13px;
+  background:var(--bg-tertiary);
+  cursor:pointer; position:relative; transition:all 0.25s ease; flex-shrink:0;
+  border:none;
+}
+.toggle-switch.on { background:var(--green); }
+.toggle-switch::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:22px; height:22px; border-radius:50%;
+  background:#fff; transition:all 0.25s ease;
+  box-shadow:0 1px 3px rgba(0,0,0,0.12);
+}
+.toggle-switch.on::after { left:18px; }
+
+/* ═══ WEAKNESS ═══ */
+.weakness-bar { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.weakness-label { font-size:11px; color:var(--text-secondary); min-width:72px; font-weight:500; }
+.weakness-track { flex:1; height:5px; background:var(--bg-tertiary); border-radius:3px; overflow:hidden; }
+.weakness-fill { height:100%; border-radius:3px; transition:width 0.4s ease; }
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:480px) {
+  .rcell { font-size:7px; }
+  .pcard { width:48px; height:68px; font-size:17px; }
+  .pcard .suit { font-size:11px; }
+  .score-grid { grid-template-columns:repeat(4,1fr); }
+  .score-val { font-size:18px; }
+  .br-summary { grid-template-columns:1fr 1fr; }
+  .act-btn { padding:12px 20px; font-size:14px; }
+}
+@media(min-width:768px) {
+  .tab-content { padding:20px 32px; }
+  .trainer-layout { display:grid; grid-template-columns:1fr 280px; gap:14px; }
+  .rcell { font-size:10px; }
+}
+
+/* ═══ PAGE HEADER (section titles) ═══ */
+.section-header {
+  font-size:28px; font-weight:700; letter-spacing:-0.6px;
+  margin-bottom:4px; color:var(--text-primary);
+}
+.section-sub {
+  font-size:14px; color:var(--text-secondary); font-weight:400;
+  margin-bottom:16px; letter-spacing:-0.1px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">G</div>
+    <div class="brand-text">Free <em>GTO</em></div>
+  </div>
+  <div class="topbar-actions">
+    <button class="icon-btn" onclick="openModal('syncModal')" title="Sync">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115.36-6.36L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
+    </button>
+    <button class="icon-btn" onclick="openModal('settingsModal')" title="Settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ APP BODY ═══ -->
+<div class="app-body">
+  <div class="tab-content">
+
+    <!-- ════════ TAB: TRAIN ════════ -->
+    <div id="tab-train" class="tab-pane active">
+      <div class="section-header">Train</div>
+      <div class="section-sub">Sharpen your preflop decisions</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Scenario</div>
+          <div class="flex gap-sm">
+            <select id="trTable" onchange="newHand()" style="width:72px;">
+              <option value="9">9-Max</option>
+              <option value="6" selected>6-Max</option>
+              <option value="2">Heads Up</option>
+            </select>
+            <select id="trStack" onchange="newHand()" style="width:82px;">
+              <option value="micro">1–5 BB</option>
+              <option value="short">5–12 BB</option>
+              <option value="mid" selected>12–25 BB</option>
+              <option value="deep">25–60 BB</option>
+              <option value="vdeep">60–100 BB</option>
+            </select>
+            <select id="trType" onchange="newHand()" style="width:92px;">
+              <option value="random">Random</option>
+              <option value="rfi">Open / RFI</option>
+              <option value="push">Push / Fold</option>
+              <option value="vsraise">vs Raise</option>
+              <option value="vs3bet">vs 3-Bet</option>
+              <option value="squeeze">Squeeze</option>
+            </select>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div id="trSituation" style="font-size:18px;font-weight:700;margin-bottom:3px;letter-spacing:-0.3px;">—</div>
+          <div id="trContext" style="font-size:13px;color:var(--text-secondary);">Tap "Deal" to begin</div>
+          <div id="trSceneDesc" style="display:none;font-family:var(--mono);font-size:11px;color:var(--text-secondary);background:var(--bg-secondary);padding:4px 10px;border-radius:var(--r-pill);margin-top:6px;display:inline-block;"></div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:10px;margin:16px 0;" id="trCards"></div>
+        <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;" id="trActions"></div>
+        <div class="feedback" id="trFeedback"></div>
+        <div style="text-align:center;margin-top:14px;">
+          <button class="btn btn-accent" onclick="newHand()" style="min-width:160px;padding:10px 24px;border-radius:var(--r-pill);font-size:14px;">Deal Next Hand</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Session Stats</div>
+        <div class="score-grid" style="grid-template-columns:repeat(4,1fr);">
+          <div class="score-box"><div class="score-val" id="sCorrect">0</div><div class="score-label">Correct</div></div>
+          <div class="score-box"><div class="score-val" id="sTotal">0</div><div class="score-label">Hands</div></div>
+          <div class="score-box"><div class="score-val" id="sAccuracy">—</div><div class="score-label">Accuracy</div></div>
+          <div class="score-box"><div class="score-val" id="sStreak">0</div><div class="score-label">Streak</div></div>
+        </div>
+      </div>
+
+      <div class="card" id="weaknessCard" style="display:none;">
+        <div class="card-title">Weakness Analysis</div>
+        <div id="weaknessChart"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent Hands</div>
+        <div id="trHistory" style="max-height:220px;overflow-y:auto;"><span class="text-xs text-muted">No hands yet.</span></div>
+      </div>
+    </div>
+
+    <!-- ════════ TAB: RANGES ════════ -->
+    <div id="tab-ranges" class="tab-pane">
+      <div class="section-header">Ranges</div>
+      <div class="section-sub">Explore preflop opening and defense ranges</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Range Explorer</div>
+          <div class="flex gap-sm items-center">
+            <select id="rgTable" onchange="rgTableChange()" style="width:72px;">
+              <option value="9">9-Max</option>
+              <option value="6" selected>6-Max</option>
+              <option value="3">3-Max</option>
+              <option value="2">HU</option>
+            </select>
+            <select id="rgHero" onchange="updateRG()"></select>
+          </div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div class="label">Effective Stack: <span id="rgStackVal" class="mono text-blue">15</span> BB</div>
+          <input type="range" id="rgStack" min="1" max="100" value="15" oninput="updateRG()">
+        </div>
+        <div class="label mb-sm">Action Sequence</div>
+        <div class="seat-row" id="rgSeats"></div>
+      </div>
+      <div class="card" style="overflow-x:auto;padding:12px;">
+        <div class="range-grid" id="rgGrid"></div>
+        <div class="legend" id="rgLegend"></div>
+        <div class="flex gap-sm wrap mt-sm" id="rgStats"></div>
+        <div class="flex gap-sm wrap mt-sm" id="rgPosStrip"></div>
+      </div>
+    </div>
+
+    <!-- ════════ TAB: PUSH/FOLD ════════ -->
+    <div id="tab-pushfold" class="tab-pane">
+      <div class="section-header">Push / Fold</div>
+      <div class="section-sub">Quick reference for short-stack decisions</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Push/Fold Chart</div>
+          <div class="flex gap-sm">
+            <select id="pfTable" onchange="renderPF()">
+              <option value="9">9-Max</option>
+              <option value="6" selected>6-Max</option>
+            </select>
+            <select id="pfStack" onchange="renderPF()">
+              <option value="3">3 BB</option>
+              <option value="5">5 BB</option>
+              <option value="8" selected>8 BB</option>
+              <option value="10">10 BB</option>
+              <option value="12">12 BB</option>
+              <option value="15">15 BB</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="pf-table" id="pfGrid"></table>
+        </div>
+        <div class="text-xs text-muted mt-sm" style="line-height:1.5;">Highlighted = Push. Ranges tighten from EP to LP at deeper stacks. At micro stacks, most positions open very wide.</div>
+      </div>
+    </div>
+
+    <!-- ════════ TAB: SESSION ════════ -->
+    <div id="tab-session" class="tab-pane">
+      <div class="section-header">Sessions</div>
+      <div class="section-sub">Track your results and bankroll</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Bankroll Overview</div>
+          <button class="btn btn-sm btn-accent" onclick="openModal('addSessionModal')" style="border-radius:var(--r-pill);">+ Log Session</button>
+        </div>
+        <div class="br-summary" id="brSummary">
+          <div class="br-box"><div class="br-val text-green" id="brTotal">$0</div><div class="br-label">Net P/L</div></div>
+          <div class="br-box"><div class="br-val text-blue" id="brSessions">0</div><div class="br-label">Sessions</div></div>
+          <div class="br-box"><div class="br-val text-orange" id="brROI">—</div><div class="br-label">ROI</div></div>
+        </div>
+        <div id="sessionList"><span class="text-xs text-muted">No sessions logged. Tap "+ Log Session" to start tracking.</span></div>
+      </div>
+    </div>
+
+    <!-- ════════ TAB: NOTES ════════ -->
+    <div id="tab-notes" class="tab-pane">
+      <div class="section-header">Notes</div>
+      <div class="section-sub">Opponent reads and hand notes</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Opponent Notes</div>
+          <button class="btn btn-sm btn-accent" onclick="openModal('addOppModal')" style="border-radius:var(--r-pill);">+ Add Player</button>
+        </div>
+        <div id="oppList"><span class="text-xs text-muted">No opponent notes yet. Track tendencies of players at your table.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Hand Notes</div>
+          <button class="btn btn-sm" onclick="addHandNote()" style="border-radius:var(--r-pill);">+ Quick Note</button>
+        </div>
+        <div id="handNotesList"><span class="text-xs text-muted">Jot down interesting hands during play.</span></div>
+      </div>
+    </div>
+
+    <!-- ════════ TAB: EQUITY ════════ -->
+    <div id="tab-equity" class="tab-pane">
+      <div class="section-header">Equity</div>
+      <div class="section-sub">Preflop matchup calculator</div>
+      <div class="card">
+        <div class="card-title">Equity Calculator</div>
+        <div class="flex gap-md wrap items-center mb-sm">
+          <div>
+            <div class="label">Your Hand</div>
+            <div class="flex gap-sm">
+              <select id="eqC1R" style="width:50px;"><option>A</option><option>K</option><option>Q</option><option>J</option><option selected>T</option><option>9</option><option>8</option><option>7</option><option>6</option><option>5</option><option>4</option><option>3</option><option>2</option></select>
+              <select id="eqC1S" style="width:44px;"><option value="s">♠</option><option value="h">♥</option><option value="d">♦</option><option value="c">♣</option></select>
+              <select id="eqC2R" style="width:50px;"><option>A</option><option selected>K</option><option>Q</option><option>J</option><option>T</option><option>9</option><option>8</option><option>7</option><option>6</option><option>5</option><option>4</option><option>3</option><option>2</option></select>
+              <select id="eqC2S" style="width:44px;"><option value="s">♠</option><option value="h" selected>♥</option><option value="d">♦</option><option value="c">♣</option></select>
+            </div>
+          </div>
+          <div style="font-size:17px;font-weight:700;color:var(--text-tertiary);padding-top:16px;">vs</div>
+          <div>
+            <div class="label">Opponent Range</div>
+            <select id="eqRange" style="width:150px;">
+              <option value="random">Random Hand</option>
+              <option value="top5">Top 5%</option>
+              <option value="top10">Top 10%</option>
+              <option value="top20">Top 20%</option>
+              <option value="top30">Top 30%</option>
+              <option value="top50" selected>Top 50%</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-accent" onclick="calcEquity()" style="width:100%;margin-bottom:12px;padding:10px;border-radius:var(--r-pill);font-size:14px;">Calculate Equity</button>
+        <div id="eqResult" style="display:none;">
+          <div class="eq-bar-wrap">
+            <div class="eq-bar" id="eqBarHero" style="background:var(--blue);width:50%;color:#fff;">50%</div>
+            <div class="eq-bar" id="eqBarOpp" style="background:var(--red);width:50%;color:#fff;">50%</div>
+          </div>
+          <div class="flex justify-between text-xs" style="font-weight:500;">
+            <span class="text-blue" id="eqHeroLabel">Hero: 50%</span>
+            <span class="text-red" id="eqOppLabel">Opponent: 50%</span>
+          </div>
+          <div class="text-xs text-muted mt-sm" id="eqDetail"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Common Matchups</div>
+        <div style="font-size:12px;line-height:2.2;font-family:var(--mono);">
+          <div>AA vs KK → <span class="text-blue">82%</span> vs 18%</div>
+          <div>AA vs AKs → <span class="text-blue">87%</span> vs 13%</div>
+          <div>KK vs AKo → <span class="text-blue">70%</span> vs 30%</div>
+          <div>QQ vs AKs → <span class="text-blue">54%</span> vs 46%</div>
+          <div>JJ vs AKo → <span class="text-blue">57%</span> vs 43%</div>
+          <div>AKs vs QJs → <span class="text-blue">62%</span> vs 38%</div>
+          <div>TT vs AKs → <span class="text-blue">54%</span> vs 46%</div>
+          <div>AKo vs 76s → <span class="text-blue">60%</span> vs 40%</div>
+          <div>Pair vs overcards → ~<span class="text-blue">55%</span></div>
+          <div>Pair vs underpair → ~<span class="text-blue">80%</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="switchTab('train',this)">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    Train
+  </button>
+  <button class="nav-item" onclick="switchTab('ranges',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    Ranges
+  </button>
+  <button class="nav-item" onclick="switchTab('pushfold',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+    Push/Fold
+  </button>
+  <button class="nav-item" onclick="switchTab('session',this)">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    Sessions
+  </button>
+  <button class="nav-item" onclick="switchTab('notes',this)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+    Notes
+  </button>
+  <button class="nav-item" onclick="switchTab('equity',this)">
+    <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+    Equity
+  </button>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+<div class="modal-overlay" id="syncModal">
+  <div class="modal">
+    <h3>Sync & Export</h3>
+    <p class="text-sm text-muted mb-sm">Sync your training data between devices or back it up as JSON.</p>
+    <div class="card-title mt-sm">Export / Import</div>
+    <div class="flex gap-sm mb-sm">
+      <button class="btn flex-1" onclick="exportData()">Export JSON</button>
+      <button class="btn flex-1" onclick="document.getElementById('importFile').click()">Import JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+    <div class="card-title mt-sm">P2P Sync</div>
+    <p class="text-xs text-muted mb-sm">Open Free GTO on another device. Copy the connection code below and paste it on the other device.</p>
+    <div class="label">Your Sync Code</div>
+    <div class="peer-id" id="myPeerId" onclick="copyPeerId()">Generating...</div>
+    <div style="margin-top:10px;">
+      <div class="label">Connect to Peer</div>
+      <div class="flex gap-sm">
+        <input type="text" class="input-sm flex-1" id="peerIdInput" placeholder="Paste peer code here...">
+        <button class="btn btn-accent btn-sm" onclick="connectPeer()">Connect</button>
+      </div>
+    </div>
+    <div class="text-xs text-muted mt-sm" id="syncStatus">Not connected</div>
+    <div style="text-align:right;margin-top:14px;">
+      <button class="btn" onclick="closeModal('syncModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h3>Settings</h3>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Sound Effects</div><div class="toggle-desc">Play sounds on correct/incorrect</div></div>
+      <div class="toggle-switch" id="toggleSound" onclick="toggleSetting('sound',this)"></div>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Vibrate on Error</div><div class="toggle-desc">Haptic feedback on wrong answers</div></div>
+      <div class="toggle-switch on" id="toggleVibrate" onclick="toggleSetting('vibrate',this)"></div>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Show Thresholds</div><div class="toggle-desc">Display strength thresholds in feedback</div></div>
+      <div class="toggle-switch on" id="toggleThresholds" onclick="toggleSetting('thresholds',this)"></div>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Simplified Ranges</div><div class="toggle-desc">Merge marginal into action zones</div></div>
+      <div class="toggle-switch" id="toggleSimplified" onclick="toggleSetting('simplified',this)"></div>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Auto-Deal</div><div class="toggle-desc">Automatically deal next hand after 1.5s</div></div>
+      <div class="toggle-switch" id="toggleAutoDeal" onclick="toggleSetting('autoDeal',this)"></div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="card-title">Data Management</div>
+      <div class="flex gap-sm wrap">
+        <button class="btn btn-sm" onclick="resetTraining()">Reset Training</button>
+        <button class="btn btn-sm" onclick="resetSessions()">Reset Sessions</button>
+        <button class="btn btn-sm btn-red" onclick="resetAll()">Reset Everything</button>
+      </div>
+    </div>
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn" onclick="closeModal('settingsModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addSessionModal">
+  <div class="modal">
+    <h3>Log Session</h3>
+    <div style="margin-bottom:10px;">
+      <div class="label">Event Name</div>
+      <input type="text" class="input-sm" id="sesEvent" placeholder="e.g. WSOP #42 $1500 NLH" style="width:100%;">
+    </div>
+    <div class="flex gap-sm mb-sm">
+      <div class="flex-1"><div class="label">Buy-in ($)</div><input type="number" class="input-sm" id="sesBuyin" placeholder="1500" style="width:100%;"></div>
+      <div class="flex-1"><div class="label">Cash-out ($)</div><input type="number" class="input-sm" id="sesCashout" placeholder="0" style="width:100%;"></div>
+    </div>
+    <div class="flex gap-sm mb-sm">
+      <div class="flex-1"><div class="label">Placement</div><input type="text" class="input-sm" id="sesPlace" placeholder="e.g. 142nd" style="width:100%;"></div>
+      <div class="flex-1"><div class="label">Field Size</div><input type="number" class="input-sm" id="sesField" placeholder="e.g. 2500" style="width:100%;"></div>
+    </div>
+    <div><div class="label">Notes</div><textarea id="sesNotes" rows="2" placeholder="Key hands, reads, adjustments..."></textarea></div>
+    <div class="flex gap-sm justify-between" style="margin-top:14px;">
+      <button class="btn" onclick="closeModal('addSessionModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveSession()" style="border-radius:var(--r-pill);">Save Session</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addOppModal">
+  <div class="modal">
+    <h3>Add Opponent</h3>
+    <div class="mb-sm"><div class="label">Name / Identifier</div><input type="text" class="input-sm" id="oppName" placeholder="e.g. Seat 4, Blue Hat Guy" style="width:100%;"></div>
+    <div class="mb-sm">
+      <div class="label">Player Type</div>
+      <div class="flex gap-sm wrap">
+        <label class="opp-tag tag-tight" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="tight" class="oppTagCb" hidden> Tight</label>
+        <label class="opp-tag tag-loose" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="loose" class="oppTagCb" hidden> Loose</label>
+        <label class="opp-tag tag-aggro" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="aggro" class="oppTagCb" hidden> Aggro</label>
+        <label class="opp-tag tag-passive" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="passive" class="oppTagCb" hidden> Passive</label>
+        <label class="opp-tag tag-fish" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="fish" class="oppTagCb" hidden> Fish</label>
+        <label class="opp-tag tag-reg" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="reg" class="oppTagCb" hidden> Reg</label>
+        <label class="opp-tag tag-nit" style="cursor:pointer;border-radius:var(--r-pill);"><input type="checkbox" value="nit" class="oppTagCb" hidden> Nit</label>
+      </div>
+    </div>
+    <div><div class="label">Notes</div><textarea id="oppNotes" rows="3" placeholder="Tendencies, bet sizing tells, timing patterns..."></textarea></div>
+    <div class="flex gap-sm justify-between" style="margin-top:14px;">
+      <button class="btn" onclick="closeModal('addOppModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveOpponent()" style="border-radius:var(--r-pill);">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// CORE DATA & CONFIG
+// ══════════════════════════════════════════════════════════════════════════
+
+const R = ['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+const SUITS = ['♠','♥','♦','♣'];
+const POS = {
+  2:['BTN','BB'], 3:['BTN','SB','BB'],
+  6:['UTG','MP','CO','BTN','SB','BB'],
+  9:['UTG','UTG+1','UTG+2','MP','MP+1','HJ','CO','BTN','SB','BB']
+};
+
+const HS={};
+(()=>{
+  const p='AA KK QQ JJ TT 99 88 77 66 55 44 33 22'.split(' ');
+  const pS=[169,168,167,166,160,152,143,131,123,115,103,95,88];
+  p.forEach((h,i)=>HS[h]=pS[i]);
+  [['AKs',165],['AQs',163],['AJs',158],['ATs',155],['A9s',144],['A8s',140],['A7s',135],['A6s',134],['A5s',138],['A4s',133],['A3s',129],['A2s',126],['KQs',157],['KJs',150],['KTs',148],['K9s',136],['K8s',128],['K7s',124],['K6s',120],['K5s',116],['K4s',111],['K3s',108],['K2s',105],['QJs',147],['QTs',142],['Q9s',132],['Q8s',122],['Q7s',112],['Q6s',110],['Q5s',104],['Q4s',100],['Q3s',98],['Q2s',92],['JTs',141],['J9s',130],['J8s',118],['J7s',107],['J6s',96],['J5s',90],['J4s',86],['J3s',84],['J2s',80],['T9s',127],['T8s',119],['T7s',106],['T6s',94],['T5s',82],['T4s',77],['T3s',74],['T2s',72],['98s',114],['97s',93],['96s',81],['95s',70],['94s',62],['93s',58],['92s',47],['87s',102],['86s',79],['85s',69],['84s',63],['83s',51],['82s',42],['76s',91],['75s',78],['74s',65],['73s',60],['72s',38],['65s',87],['64s',71],['63s',56],['62s',44],['54s',83],['53s',68],['52s',59],['43s',66],['42s',53],['32s',49]].forEach(([h,s])=>HS[h]=s);
+  [['AKo',164],['AQo',156],['AJo',148],['ATo',142],['A9o',130],['A8o',121],['A7o',110],['A6o',106],['A5o',108],['A4o',104],['A3o',99],['A2o',96],['KQo',149],['KJo',137],['KTo',133],['K9o',117],['K8o',100],['K7o',95],['K6o',88],['K5o',84],['K4o',78],['K3o',72],['K2o',68],['QJo',139],['QTo',125],['Q9o',94],['Q8o',90],['Q7o',80],['Q6o',74],['Q5o',70],['Q4o',64],['Q3o',57],['Q2o',54],['JTo',132],['J9o',113],['J8o',85],['J7o',69],['J6o',55],['J5o',50],['J4o',46],['J3o',43],['J2o',39],['T9o',109],['T8o',99],['T7o',75],['T6o',52],['T5o',40],['T4o',36],['T3o',32],['T2o',30],['98o',101],['97o',76],['96o',48],['95o',34],['94o',27],['93o',26],['92o',20],['87o',89],['86o',67],['85o',37],['84o',28],['83o',22],['82o',18],['76o',73],['75o',45],['74o',29],['73o',24],['72o',16],['65o',61],['64o',35],['63o',25],['62o',19],['54o',41],['53o',33],['52o',23],['43o',31],['42o',21],['32o',17]].forEach(([h,s])=>HS[h]=s);
+})();
+
+function gridLabel(r,c){return r===c?R[r]+R[c]:c>r?R[r]+R[c]+'s':R[c]+R[r]+'o';}
+function combos(r,c){return r===c?6:c>r?4:12;}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════════════════════════════════
+
+const STORE_KEY = 'freegto_v1';
+let DB = loadDB();
+
+function defaultDB(){
+  return {
+    settings: { sound:false, vibrate:true, thresholds:true, simplified:false, autoDeal:false },
+    training: { correct:0, total:0, streak:0, bestStreak:0, history:[], weaknesses:{} },
+    sessions: [],
+    opponents: [],
+    handNotes: [],
+    version: 3
+  };
+}
+function loadDB(){
+  try { const d=JSON.parse(localStorage.getItem(STORE_KEY)); if(d&&d.version>=3) return d; } catch(e){}
+  return defaultDB();
+}
+function saveDB(){ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+
+// ══════════════════════════════════════════════════════════════════════════
+// SOLVER APPROXIMATION ENGINE
+// ══════════════════════════════════════════════════════════════════════════
+
+function posIdx(pos,ts){ return POS[ts].indexOf(pos); }
+function posPct(pos,ts){ const s=POS[ts]; return s.indexOf(pos)/Math.max(1,s.length-1); }
+
+function rfiThreshold(stack,pos,ts){
+  const pp=posPct(pos,ts), seats=POS[ts].length;
+  let base;
+  if(pos==='BB') base=90;
+  else if(pos==='SB') base=85+seats*2;
+  else base=148-pp*(80+seats*3);
+  let sa=0;
+  if(stack<=6) sa=-20+(6-stack)*4;
+  else if(stack<=15) sa=-8;
+  else if(stack<=30) sa=0;
+  else if(stack<=60) sa=5;
+  else sa=10;
+  const pla=seats-posIdx(pos,ts)-1;
+  return Math.max(10,Math.min(168,base+sa+pla*3.5));
+}
+
+function actionMod(type,rPct,stack){
+  const eb=1-rPct;
+  switch(type){
+    case'fold':return-1.5;case'limp':return 4+eb*6;case'call':return 8+eb*10;
+    case'raise':return 28+eb*25+Math.max(0,stack-20)*0.3;
+    case'3bet':return 50+eb*30+Math.max(0,stack-20)*0.4;
+    case'4bet':return 75+eb*20;default:return 0;
+  }
+}
+
+function calcThreshold(stack,ts,heroPos,priors,heroAct){
+  let base=rfiThreshold(stack,heroPos,ts);
+  let totalMod=0, facingAgg=false;
+  for(const pa of priors){
+    totalMod+=actionMod(pa.action,posPct(pa.pos,ts),stack);
+    if(['raise','3bet','4bet'].includes(pa.action)) facingAgg=true;
+  }
+  base+=totalMod;
+  if(heroAct==='push'&&stack<=15) base-=10;
+  if(heroAct==='call'&&facingAgg) base-=12;
+  if(heroAct==='3bet') base+=15;
+  if(heroAct==='4bet') base+=30;
+  if(stack>40&&['3bet','4bet'].includes(heroAct)) base+=(stack-40)*0.4;
+  return Math.max(10,Math.min(169,base));
+}
+
+function marginalW(stack){
+  if(stack<=5)return 10; if(stack<=15)return 7; if(stack<=30)return 5; return 4;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════════════════════
+
+function switchTab(id,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelector('.tab-content').scrollTop=0;
+  if(id==='ranges'&&!window._rgInit){ window._rgInit=true; rgBuildHero(); rgBuildScenario(); updateRG(); }
+  if(id==='pushfold'&&!window._pfInit){ window._pfInit=true; renderPF(); }
+  if(id==='session') renderSessions();
+  if(id==='notes') renderOpponents();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// HAND TRAINER
+// ══════════════════════════════════════════════════════════════════════════
+
+let curHand=null;
+const T=DB.training;
+
+function rCard(ex){
+  let c; do{c={rank:R[Math.random()*13|0],suit:SUITS[Math.random()*4|0]};c.id=c.rank+c.suit;}
+  while(ex.some(e=>e.id===c.id)); return c;
+}
+function toGrid(c1,c2){
+  const i1=R.indexOf(c1.rank),i2=R.indexOf(c2.rank);
+  if(c1.rank===c2.rank) return c1.rank+c2.rank;
+  const hi=Math.min(i1,i2),lo=Math.max(i1,i2);
+  return R[hi]+R[lo]+(c1.suit===c2.suit?'s':'o');
+}
+
+function genScenario(type,ts,stackRange){
+  const seats=POS[ts];
+  let minS,maxS;
+  switch(stackRange){case'micro':minS=1;maxS=5;break;case'short':minS=5;maxS=12;break;case'mid':minS=12;maxS=25;break;case'deep':minS=25;maxS=60;break;case'vdeep':minS=60;maxS=100;break;}
+  const stack=(Math.random()*(maxS-minS)+minS)|0||minS;
+  if(type==='random'){
+    const types=['rfi','push','vsraise','vs3bet'];
+    if(ts>=6) types.push('squeeze');
+    type=types[Math.random()*types.length|0];
+    if(stack<=12) type=Math.random()<0.5?'push':'rfi';
+  }
+  let heroPos,priors=[],heroOpts,desc;
+  if(type==='rfi'){
+    const vp=seats.filter(p=>p!=='BB');
+    heroPos=vp[Math.random()*vp.length|0];
+    const hi=seats.indexOf(heroPos);
+    for(let i=0;i<hi;i++) priors.push({pos:seats[i],action:'fold'});
+    heroOpts=stack<=12?['push','fold']:['raise','fold'];
+    desc=`Folded to ${heroPos}`;
+  } else if(type==='push'){
+    const vp=seats.filter(p=>p!=='BB');
+    heroPos=vp[Math.random()*vp.length|0];
+    const hi=seats.indexOf(heroPos);
+    for(let i=0;i<hi;i++) priors.push({pos:seats[i],action:'fold'});
+    heroOpts=['push','fold'];
+    desc=`Folded to ${heroPos} — push or fold?`;
+  } else if(type==='vsraise'){
+    const nb=seats.filter(p=>p!=='BB');
+    const ri=Math.random()*Math.max(1,nb.length-2)|0;
+    const rp=nb[ri]; const rIdx=seats.indexOf(rp);
+    const later=seats.filter((_,i)=>i>rIdx&&seats[i]!=='BB');
+    heroPos=later.length?later[Math.random()*later.length|0]:seats[seats.length-1];
+    const hi=seats.indexOf(heroPos);
+    for(let i=0;i<hi;i++){
+      if(i===rIdx) priors.push({pos:seats[i],action:'raise'});
+      else priors.push({pos:seats[i],action:'fold'});
+    }
+    heroOpts=['3bet','call','fold'];
+    desc=`${rp} raises → ${heroPos}?`;
+  } else if(type==='vs3bet'){
+    const nb=seats.filter(p=>p!=='BB');
+    heroPos=nb[Math.random()*Math.max(1,nb.length-1)|0];
+    const hi=seats.indexOf(heroPos);
+    const later=seats.filter((_,i)=>i>hi);
+    const tp=later.length?later[Math.random()*later.length|0]:seats[seats.length-1];
+    for(let i=0;i<hi;i++) priors.push({pos:seats[i],action:'fold'});
+    priors.push({pos:tp,action:'3bet'});
+    heroOpts=['4bet','call','fold'];
+    desc=`Hero opens ${heroPos}, ${tp} 3-bets → Hero?`;
+  } else if(type==='squeeze'){
+    const nb=seats.filter(p=>p!=='BB');
+    const ri=Math.random()*Math.max(1,nb.length-2)|0;
+    const rp=nb[ri]; const rIdx=seats.indexOf(rp);
+    const mid=seats.filter((_,i)=>i>rIdx&&i<seats.length-1);
+    const cp=mid.length?mid[Math.random()*mid.length|0]:seats[rIdx+1]||seats[seats.length-1];
+    const ci=seats.indexOf(cp);
+    const late=seats.filter((_,i)=>i>ci);
+    heroPos=late.length?late[Math.random()*late.length|0]:seats[seats.length-1];
+    const hi=seats.indexOf(heroPos);
+    for(let i=0;i<hi;i++){
+      if(i===rIdx) priors.push({pos:seats[i],action:'raise'});
+      else if(i===ci) priors.push({pos:seats[i],action:'call'});
+      else priors.push({pos:seats[i],action:'fold'});
+    }
+    heroOpts=['3bet','call','fold'];
+    desc=`${rp} raises, ${cp} calls → ${heroPos}?`;
+  }
+  return {heroPos,priors,heroOpts,stack,desc,type};
+}
+
+function newHand(){
+  const ts=+document.getElementById('trTable').value;
+  const sr=document.getElementById('trStack').value;
+  const tp=document.getElementById('trType').value;
+  const sc=genScenario(tp,ts,sr);
+  const c1=rCard([]),c2=rCard([c1]);
+  const gl=toGrid(c1,c2);
+  const strength=HS[gl]||50;
+  const thresholds={};
+  for(const opt of sc.heroOpts){ if(opt==='fold')continue; thresholds[opt]=calcThreshold(sc.stack,ts,sc.heroPos,sc.priors,opt); }
+  let correctAction='fold';
+  const mw=marginalW(sc.stack);
+  const aggOrder=['4bet','3bet','push','raise','call'];
+  for(const act of aggOrder){ if(thresholds[act]!==undefined&&strength>=thresholds[act]){correctAction=act;break;} }
+  let isMarginal=false;
+  if(correctAction==='fold'){ for(const act of aggOrder){ if(thresholds[act]!==undefined&&strength>=thresholds[act]-mw){isMarginal=true;break;} } }
+  curHand={cards:[c1,c2],gl,strength,thresholds,correctAction,isMarginal,sc,mw};
+  document.getElementById('trSituation').textContent=`${sc.heroPos} — ${sc.stack} BB — ${ts}-Max`;
+  document.getElementById('trContext').textContent=
+    sc.heroOpts.includes('push')?'Push or Fold?':
+    sc.heroOpts.includes('4bet')?'4-Bet, Call, or Fold?':
+    sc.heroOpts.includes('3bet')?'3-Bet, Call, or Fold?':'Raise or Fold?';
+  const sd=document.getElementById('trSceneDesc');
+  sd.style.display='inline-block'; sd.textContent=sc.desc;
+  document.getElementById('trCards').innerHTML=[c1,c2].map(c=>{
+    const red=c.suit==='♥'||c.suit==='♦';
+    return `<div class="pcard ${red?'red':''}"><span>${c.rank}</span><span class="suit">${c.suit}</span></div>`;
+  }).join('');
+  const btnMap={push:['raise-btn','Push All-In'],raise:['raise-btn','Raise'],'3bet':['threebet-btn','3-Bet'],'4bet':['threebet-btn','4-Bet'],call:['call-btn','Call'],fold:['fold-btn','Fold']};
+  document.getElementById('trActions').innerHTML=sc.heroOpts.map(opt=>{
+    const [cls,lbl]=btnMap[opt];
+    return `<button class="act-btn ${cls}" onclick="submitAnswer('${opt}')">${lbl}</button>`;
+  }).join('');
+  document.getElementById('trFeedback').className='feedback';
+  document.getElementById('trFeedback').innerHTML='';
+}
+
+function submitAnswer(ans){
+  if(!curHand)return;
+  const h=curHand;
+  const isCorrect=ans===h.correctAction||h.isMarginal;
+  T.total++; if(isCorrect){T.correct++;T.streak++;if(T.streak>T.bestStreak)T.bestStreak=T.streak;}else{T.streak=0;}
+  const wKey=`${h.sc.type}_${h.sc.heroPos}`;
+  if(!T.weaknesses[wKey]) T.weaknesses[wKey]={correct:0,total:0};
+  T.weaknesses[wKey].total++;
+  if(isCorrect) T.weaknesses[wKey].correct++;
+
+  const fb=document.getElementById('trFeedback');
+  const thrStr=DB.settings.thresholds?` <span style="opacity:0.6;font-size:11px;">Thresholds: ${Object.entries(h.thresholds).map(([a,t])=>`${a}≥${Math.round(t)}`).join(', ')}</span>`:'';
+
+  if(h.isMarginal&&ans!==h.correctAction){
+    fb.className='feedback marginal';
+    fb.innerHTML=`<strong>Close call.</strong> ${h.gl} (str ${h.strength}) is marginal — EV difference is minimal.${thrStr}`;
+  } else if(isCorrect){
+    fb.className='feedback correct';
+    fb.innerHTML=`<strong>Correct.</strong> ${h.gl} (str ${h.strength}) → <strong>${h.correctAction}</strong> at ${h.sc.stack}BB from ${h.sc.heroPos}.${thrStr}`;
+    if(DB.settings.sound) playTone(800,80);
+  } else {
+    fb.className='feedback incorrect';
+    const tip=h.correctAction==='fold'?'Not enough equity here.':
+      `Needed strength ≥${Math.round(h.thresholds[h.correctAction]||0)} to ${h.correctAction}.`;
+    fb.innerHTML=`<strong>GTO: ${h.correctAction}.</strong> ${h.gl} (str ${h.strength}) at ${h.sc.stack}BB from ${h.sc.heroPos}. ${tip}${thrStr}`;
+    if(DB.settings.vibrate&&navigator.vibrate) navigator.vibrate(120);
+    if(DB.settings.sound) playTone(300,120);
+  }
+
+  T.history.unshift({hand:h.gl,correct:isCorrect,marginal:h.isMarginal&&ans!==h.correctAction,pos:h.sc.heroPos,stack:h.sc.stack,answer:ans,gto:h.correctAction,desc:h.sc.desc,ts:Date.now()});
+  if(T.history.length>200) T.history.length=200;
+  updateTrainerUI();
+  saveDB();
+  if(DB.settings.autoDeal) setTimeout(newHand,1500);
+}
+
+function updateTrainerUI(){
+  document.getElementById('sCorrect').textContent=T.correct;
+  document.getElementById('sTotal').textContent=T.total;
+  document.getElementById('sAccuracy').textContent=T.total?Math.round(T.correct/T.total*100)+'%':'—';
+  document.getElementById('sStreak').textContent=T.streak;
+  const hDiv=document.getElementById('trHistory');
+  if(!T.history.length){ hDiv.innerHTML='<span class="text-xs text-muted">No hands yet.</span>'; return; }
+  hDiv.innerHTML=T.history.slice(0,30).map(h=>`
+    <div class="hist-entry">
+      <div class="hist-dot ${h.correct?'ok':'no'}"></div>
+      <span class="hist-hand">${h.hand}</span>
+      <span class="hist-meta">${h.pos} ${h.stack}BB</span>
+      <span class="hist-result">${h.correct?(h.marginal?'≈':'✓'):'✗ → '+h.gto}</span>
+    </div>`).join('');
+  renderWeaknesses();
+}
+
+function renderWeaknesses(){
+  const wk=T.weaknesses;
+  const entries=Object.entries(wk).filter(([_,v])=>v.total>=3).sort((a,b)=>(a[1].correct/a[1].total)-(b[1].correct/b[1].total));
+  if(!entries.length){ document.getElementById('weaknessCard').style.display='none'; return; }
+  document.getElementById('weaknessCard').style.display='block';
+  const colors=['var(--red)','var(--orange)','var(--yellow)','var(--green)'];
+  document.getElementById('weaknessChart').innerHTML=entries.slice(0,8).map(([k,v])=>{
+    const pct=Math.round(v.correct/v.total*100);
+    const color=pct<40?colors[0]:pct<60?colors[1]:pct<80?colors[2]:colors[3];
+    const label=k.replace('_',' → ');
+    return `<div class="weakness-bar">
+      <span class="weakness-label">${label}</span>
+      <div class="weakness-track"><div class="weakness-fill" style="width:${pct}%;background:${color};"></div></div>
+      <span class="mono text-xs" style="color:${color};min-width:32px;text-align:right;">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+function playTone(freq,dur){
+  try{const ac=new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator();const g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=freq;g.gain.value=0.08;o.start();o.stop(ac.currentTime+dur/1000);}catch(e){}
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// RANGE EXPLORER
+// ══════════════════════════════════════════════════════════════════════════
+
+function rgBuildHero(){
+  const ts=+document.getElementById('rgTable').value;
+  const sel=document.getElementById('rgHero');
+  const seats=POS[ts];
+  const def=seats.includes('CO')?'CO':'BTN';
+  sel.innerHTML=seats.map(p=>`<option value="${p}"${p===def?' selected':''}>${p}</option>`).join('');
+}
+function rgBuildScenario(){
+  const ts=+document.getElementById('rgTable').value;
+  const hp=document.getElementById('rgHero').value;
+  const seats=POS[ts]; const hi=seats.indexOf(hp);
+  const cont=document.getElementById('rgSeats');
+  let html='';
+  for(let i=0;i<seats.length;i++){
+    if(i===hi){html+=`<div class="seat hero"><div class="pos-label">${seats[i]}</div><div style="font-size:10px;font-weight:700;color:var(--blue);">HERO</div></div>`;break;}
+    const opts='<option value="fold">Fold</option><option value="limp">Limp</option><option value="raise">Raise</option><option value="3bet">3-Bet</option><option value="4bet">4-Bet</option><option value="call">Call</option>';
+    html+=`<div class="seat"><div class="pos-label">${seats[i]}</div><select id="rgs_${i}" onchange="updateRG()">${opts}</select></div>`;
+    if(i<hi) html+='<span class="seat-arrow">→</span>';
+  }
+  cont.innerHTML=html;
+}
+function rgTableChange(){ rgBuildHero(); rgBuildScenario(); updateRG(); }
+
+function updateRG(){
+  const ts=+document.getElementById('rgTable').value;
+  const stack=+document.getElementById('rgStack').value;
+  const hp=document.getElementById('rgHero').value;
+  document.getElementById('rgStackVal').textContent=stack;
+  const seats=POS[ts]; const hi=seats.indexOf(hp);
+  const priors=[];
+  for(let i=0;i<hi;i++){const sel=document.getElementById('rgs_'+i);if(sel)priors.push({pos:seats[i],action:sel.value});}
+  const hasR=priors.some(a=>a.action==='raise');
+  const has3=priors.some(a=>a.action==='3bet');
+  const has4=priors.some(a=>a.action==='4bet');
+  const allFold=priors.every(a=>['fold','limp'].includes(a.action));
+  let heroOpts;
+  if(has4) heroOpts=['call','fold'];
+  else if(has3) heroOpts=['4bet','call','fold'];
+  else if(hasR) heroOpts=['3bet','call','fold'];
+  else if(allFold) heroOpts=stack<=15?['push','fold']:['raise','fold'];
+  else heroOpts=['raise','fold'];
+  const primary=heroOpts[0];
+  const thr=calcThreshold(stack,ts,hp,priors,primary);
+  const mw=marginalW(stack);
+  let callThr=null;
+  if(['3bet','4bet'].includes(primary)) callThr=calcThreshold(stack,ts,hp,priors,'call');
+  const grid=document.getElementById('rgGrid'); grid.innerHTML='';
+  let counts={raise:0,call:0,marginal:0,total:0};
+  const simp=DB.settings.simplified;
+  for(let r=0;r<13;r++){for(let c=0;c<13;c++){
+    const lbl=gridLabel(r,c); const str=HS[lbl]||50; const cb=combos(r,c);
+    counts.total+=cb;
+    let cls='fold';
+    if(str>=thr){
+      cls=['3bet','4bet'].includes(primary)?(primary==='4bet'?'fourbet':'threebet'):'raise';
+      counts.raise+=cb;
+    } else if(callThr!==null&&str>=callThr){ cls='call'; counts.call+=cb; }
+    else if(str>=thr-mw){
+      if(simp){cls=callThr!==null?'call':'raise';counts[callThr!==null?'call':'raise']+=cb;}
+      else{cls='marginal';counts.marginal+=cb;}
+    }
+    const cell=document.createElement('div');
+    cell.className=`rcell ${cls}`;
+    cell.textContent=lbl;
+    cell.title=`${lbl} — Str:${str} Thr:${Math.round(thr)}`;
+    grid.appendChild(cell);
+  }}
+  const colorMap={raise:'var(--blue)',threebet:'var(--indigo)',fourbet:'var(--red)',call:'var(--green)',marginal:'var(--orange)',fold:'var(--bg-secondary)'};
+  const nameMap={raise:primary==='push'?'Push':'Raise',threebet:'3-Bet',fourbet:'4-Bet',call:'Call',marginal:'Marginal',fold:'Fold'};
+  const active=new Set(['fold']);
+  document.querySelectorAll('#rgGrid .rcell').forEach(c=>c.classList.forEach(cl=>{if(colorMap[cl])active.add(cl);}));
+  document.getElementById('rgLegend').innerHTML=[...active].map(k=>`<div class="legend-item"><div class="legend-dot" style="background:${colorMap[k]}"></div>${nameMap[k]}</div>`).join('');
+  const actSeq=priors.filter(a=>a.action!=='fold').map(a=>`${a.pos} ${a.action}`).join(' → ');
+  document.getElementById('rgStats').innerHTML=`
+    <div class="stat-chip">${primary==='push'?'Push':'Raise/Bet'}: <strong>${((counts.raise/1326)*100).toFixed(1)}%</strong></div>
+    ${counts.call?`<div class="stat-chip">Call: <strong>${((counts.call/1326)*100).toFixed(1)}%</strong></div>`:''}
+    ${!simp&&counts.marginal?`<div class="stat-chip">Marginal: <strong>${((counts.marginal/1326)*100).toFixed(1)}%</strong></div>`:''}
+    <div class="stat-chip">Stack: <strong>${stack} BB</strong></div>
+    <div class="stat-chip">Scenario: <strong>${actSeq||'Folded to Hero'}</strong></div>`;
+  document.getElementById('rgPosStrip').innerHTML=seats.map(p=>
+    `<div class="pos-chip ${p===hp?'active':''}" onclick="document.getElementById('rgHero').value='${p}';rgBuildScenario();updateRG();">${p}</div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PUSH/FOLD CHARTS
+// ══════════════════════════════════════════════════════════════════════════
+
+function renderPF(){
+  const ts=+document.getElementById('pfTable').value;
+  const stack=+document.getElementById('pfStack').value;
+  const seats=POS[ts].filter(p=>p!=='BB');
+  const grid=document.getElementById('pfGrid');
+  let html='<thead><tr><th>Hand</th>';
+  seats.forEach(p=>{html+=`<th>${p}</th>`;});
+  html+='</tr></thead><tbody>';
+  const hands=Object.entries(HS).sort((a,b)=>b[1]-a[1]);
+  for(const [hand,str] of hands){
+    html+='<tr>';
+    html+=`<td style="font-weight:600;">${hand}</td>`;
+    for(const pos of seats){
+      const priors=[];
+      const pi=POS[ts].indexOf(pos);
+      for(let i=0;i<pi;i++) priors.push({pos:POS[ts][i],action:'fold'});
+      const thr=calcThreshold(stack,ts,pos,priors,'push');
+      const isPush=str>=thr;
+      html+=`<td class="${isPush?'push':'fold'}">${isPush?'✓':'·'}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</tbody>';
+  grid.innerHTML=html;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// SESSION / BANKROLL
+// ══════════════════════════════════════════════════════════════════════════
+
+function saveSession(){
+  const ev=document.getElementById('sesEvent').value.trim()||'Unnamed Session';
+  const bi=+document.getElementById('sesBuyin').value||0;
+  const co=+document.getElementById('sesCashout').value||0;
+  const place=document.getElementById('sesPlace').value.trim();
+  const field=+document.getElementById('sesField').value||0;
+  const notes=document.getElementById('sesNotes').value.trim();
+  DB.sessions.unshift({id:Date.now(),event:ev,buyin:bi,cashout:co,place,field,notes,date:new Date().toISOString()});
+  saveDB(); closeModal('addSessionModal'); renderSessions(); toast('Session logged');
+  ['sesEvent','sesBuyin','sesCashout','sesPlace','sesField','sesNotes'].forEach(id=>document.getElementById(id).value='');
+}
+
+function renderSessions(){
+  const list=document.getElementById('sessionList');
+  if(!DB.sessions.length){ list.innerHTML='<span class="text-xs text-muted">No sessions logged.</span>'; }
+  else {
+    list.innerHTML=DB.sessions.map(s=>{
+      const pl=s.cashout-s.buyin;
+      const d=new Date(s.date);
+      return `<div class="session-entry">
+        <div class="session-result ${pl>=0?'pos':'neg'}">${pl>=0?'+':''}$${pl.toLocaleString()}</div>
+        <div class="session-meta">
+          <div class="event-name">${s.event}</div>
+          <div class="event-detail">${d.toLocaleDateString()} · Buy-in $${s.buyin.toLocaleString()}${s.place?' · '+s.place:''}${s.field?' / '+s.field:''}</div>
+          ${s.notes?`<div class="event-detail" style="margin-top:2px;color:var(--text-secondary);">${s.notes}</div>`:''}
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="delSession(${s.id})" title="Delete" style="font-size:14px;color:var(--text-tertiary);">✕</button>
+      </div>`;
+    }).join('');
+  }
+  const tot=DB.sessions.reduce((s,e)=>s+(e.cashout-e.buyin),0);
+  const totBI=DB.sessions.reduce((s,e)=>s+e.buyin,0);
+  document.getElementById('brTotal').textContent=(tot>=0?'+':'')+' $'+tot.toLocaleString();
+  document.getElementById('brTotal').style.color=tot>=0?'var(--green)':'var(--red)';
+  document.getElementById('brSessions').textContent=DB.sessions.length;
+  document.getElementById('brROI').textContent=totBI?Math.round(tot/totBI*100)+'%':'—';
+}
+function delSession(id){ DB.sessions=DB.sessions.filter(s=>s.id!==id); saveDB(); renderSessions(); }
+
+// ══════════════════════════════════════════════════════════════════════════
+// OPPONENT NOTES
+// ══════════════════════════════════════════════════════════════════════════
+
+function saveOpponent(){
+  const name=document.getElementById('oppName').value.trim()||'Unknown';
+  const tags=[...document.querySelectorAll('.oppTagCb:checked')].map(cb=>cb.value);
+  const notes=document.getElementById('oppNotes').value.trim();
+  DB.opponents.unshift({id:Date.now(),name,tags,notes,date:new Date().toISOString()});
+  saveDB(); closeModal('addOppModal'); renderOpponents(); toast('Player saved');
+  document.getElementById('oppName').value='';
+  document.getElementById('oppNotes').value='';
+  document.querySelectorAll('.oppTagCb').forEach(cb=>{cb.checked=false;});
+}
+
+function renderOpponents(){
+  const list=document.getElementById('oppList');
+  if(!DB.opponents.length){ list.innerHTML='<span class="text-xs text-muted">No opponent notes yet.</span>'; return; }
+  list.innerHTML=DB.opponents.map(o=>{
+    const tagMap={tight:'tag-tight',loose:'tag-loose',aggro:'tag-aggro',passive:'tag-passive',fish:'tag-fish',reg:'tag-reg',nit:'tag-nit'};
+    return `<div class="opp-card">
+      <div class="opp-header">
+        <div class="opp-avatar">${o.name.charAt(0).toUpperCase()}</div>
+        <div class="opp-name">${o.name}</div>
+        <div class="opp-tags">${o.tags.map(t=>`<span class="opp-tag ${tagMap[t]||''}">${t}</span>`).join('')}</div>
+        <button class="btn btn-sm btn-ghost" onclick="delOpp(${o.id})" style="margin-left:auto;font-size:14px;color:var(--text-tertiary);">✕</button>
+      </div>
+      ${o.notes?`<div class="opp-notes">${o.notes}</div>`:''}
+      <div class="text-xs text-muted mt-sm">${new Date(o.date).toLocaleDateString()}</div>
+    </div>`;
+  }).join('');
+}
+function delOpp(id){ DB.opponents=DB.opponents.filter(o=>o.id!==id); saveDB(); renderOpponents(); }
+
+// ══════════════════════════════════════════════════════════════════════════
+// HAND NOTES
+// ══════════════════════════════════════════════════════════════════════════
+
+function addHandNote(){
+  const note=prompt('Quick hand note:');
+  if(!note) return;
+  DB.handNotes.unshift({id:Date.now(),text:note,date:new Date().toISOString()});
+  saveDB(); renderHandNotes(); toast('Note saved');
+}
+function renderHandNotes(){
+  const list=document.getElementById('handNotesList');
+  if(!DB.handNotes.length){list.innerHTML='<span class="text-xs text-muted">Jot down interesting hands during play.</span>';return;}
+  list.innerHTML=DB.handNotes.map(n=>`
+    <div style="padding:8px 0;border-bottom:0.5px solid var(--separator);font-size:12px;display:flex;gap:6px;align-items:flex-start;">
+      <span style="flex:1;color:var(--text-secondary);">${n.text}</span>
+      <span class="text-xs text-muted" style="white-space:nowrap;">${new Date(n.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+      <button class="btn btn-sm btn-ghost" onclick="delHandNote(${n.id})" style="padding:2px 6px;font-size:14px;color:var(--text-tertiary);">✕</button>
+    </div>`).join('');
+}
+function delHandNote(id){ DB.handNotes=DB.handNotes.filter(n=>n.id!==id); saveDB(); renderHandNotes(); }
+
+// ══════════════════════════════════════════════════════════════════════════
+// EQUITY CALCULATOR
+// ══════════════════════════════════════════════════════════════════════════
+
+function calcEquity(){
+  const ranks='A K Q J T 9 8 7 6 5 4 3 2'.split(' ');
+  const r1=document.getElementById('eqC1R').value;
+  const s1=document.getElementById('eqC1S').value;
+  const r2=document.getElementById('eqC2R').value;
+  const s2=document.getElementById('eqC2S').value;
+  const hero=toGrid({rank:r1,suit:s1==='s'?'♠':s1==='h'?'♥':s1==='d'?'♦':'♣'},{rank:r2,suit:s2==='s'?'♠':s2==='h'?'♥':s2==='d'?'♦':'♣'});
+  const heroStr=HS[hero]||50;
+  const rangeType=document.getElementById('eqRange').value;
+  const allHands=Object.entries(HS).sort((a,b)=>b[1]-a[1]);
+  const total=allHands.length;
+  let rangeTop;
+  switch(rangeType){
+    case'top5':rangeTop=Math.ceil(total*0.05);break;
+    case'top10':rangeTop=Math.ceil(total*0.10);break;
+    case'top20':rangeTop=Math.ceil(total*0.20);break;
+    case'top30':rangeTop=Math.ceil(total*0.30);break;
+    case'top50':rangeTop=Math.ceil(total*0.50);break;
+    default:rangeTop=total;
+  }
+  const rangeHands=allHands.slice(0,rangeTop);
+  let wins=0,losses=0,ties=0;
+  for(const [hand,str] of rangeHands){
+    if(heroStr>str) wins++;
+    else if(heroStr<str) losses++;
+    else ties++;
+  }
+  const n=wins+losses+ties;
+  const eq=((wins+ties*0.5)/n*100);
+  const oppEq=100-eq;
+  document.getElementById('eqResult').style.display='block';
+  document.getElementById('eqBarHero').style.width=eq+'%';
+  document.getElementById('eqBarHero').textContent=Math.round(eq)+'%';
+  document.getElementById('eqBarOpp').style.width=oppEq+'%';
+  document.getElementById('eqBarOpp').textContent=Math.round(oppEq)+'%';
+  document.getElementById('eqHeroLabel').textContent=`Hero (${hero}): ${eq.toFixed(1)}%`;
+  document.getElementById('eqOppLabel').textContent=`Opponent (${rangeType}): ${oppEq.toFixed(1)}%`;
+  document.getElementById('eqDetail').textContent=`Strength rank: ${heroStr}/169 · vs ${rangeTop} hand combos in range`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// P2P SYNC & DATA EXPORT
+// ══════════════════════════════════════════════════════════════════════════
+
+function generateSyncCode(){
+  return 'GTO-'+Math.random().toString(36).substr(2,4).toUpperCase()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+}
+let mySyncCode=generateSyncCode();
+document.getElementById('myPeerId').textContent=mySyncCode;
+
+function copyPeerId(){
+  navigator.clipboard.writeText(mySyncCode).then(()=>toast('Sync code copied')).catch(()=>{});
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`freegto-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('Data exported');
+}
+
+function importData(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.version){
+        if(data.training){
+          T.correct=Math.max(T.correct,data.training.correct||0);
+          T.total=Math.max(T.total,data.training.total||0);
+          T.bestStreak=Math.max(T.bestStreak,data.training.bestStreak||0);
+          const existingIds=new Set(T.history.map(h=>h.ts));
+          const newHist=(data.training.history||[]).filter(h=>!existingIds.has(h.ts));
+          T.history=[...T.history,...newHist].sort((a,b)=>b.ts-a.ts).slice(0,200);
+          for(const[k,v] of Object.entries(data.training.weaknesses||{})){
+            if(!T.weaknesses[k]) T.weaknesses[k]={correct:0,total:0};
+            T.weaknesses[k].correct+=v.correct;
+            T.weaknesses[k].total+=v.total;
+          }
+        }
+        if(data.sessions){
+          const existingIds=new Set(DB.sessions.map(s=>s.id));
+          DB.sessions=[...DB.sessions,...data.sessions.filter(s=>!existingIds.has(s.id))].sort((a,b)=>new Date(b.date)-new Date(a.date));
+        }
+        if(data.opponents){
+          const existingIds=new Set(DB.opponents.map(o=>o.id));
+          DB.opponents=[...DB.opponents,...data.opponents.filter(o=>!existingIds.has(o.id))];
+        }
+        if(data.handNotes){
+          const existingIds=new Set(DB.handNotes.map(n=>n.id));
+          DB.handNotes=[...DB.handNotes,...data.handNotes.filter(n=>!existingIds.has(n.id))].sort((a,b)=>b.id-a.id);
+        }
+        saveDB(); updateTrainerUI(); toast('Data imported & merged');
+      } else { toast('Invalid backup file'); }
+    }catch(err){ toast('Import failed: '+err.message); }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+function connectPeer(){
+  const code=document.getElementById('peerIdInput').value.trim();
+  if(!code){ toast('Enter a peer sync code'); return; }
+  toast('P2P requires a signaling server. Use Export/Import for now.');
+  document.getElementById('syncStatus').textContent='Use JSON export/import for reliable cross-device sync.';
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// SETTINGS & UTILITIES
+// ══════════════════════════════════════════════════════════════════════════
+
+function toggleSetting(key,el){
+  DB.settings[key]=!DB.settings[key];
+  el.classList.toggle('on',DB.settings[key]);
+  saveDB();
+  if(key==='simplified'&&window._rgInit) updateRG();
+}
+
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m) m.classList.remove('show');});
+});
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function resetTraining(){
+  if(!confirm('Reset all training data?')) return;
+  Object.assign(T,{correct:0,total:0,streak:0,bestStreak:0,history:[],weaknesses:{}});
+  saveDB(); updateTrainerUI(); toast('Training data reset');
+}
+function resetSessions(){
+  if(!confirm('Reset all session logs?')) return;
+  DB.sessions=[]; saveDB(); renderSessions(); toast('Sessions reset');
+}
+function resetAll(){
+  if(!confirm('This will erase ALL data. Are you sure?')) return;
+  DB=defaultDB(); saveDB(); location.reload();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════
+
+['sound','vibrate','thresholds','simplified','autoDeal'].forEach(k=>{
+  const el=document.getElementById('toggle'+k.charAt(0).toUpperCase()+k.slice(1));
+  if(el) el.classList.toggle('on',DB.settings[k]);
+});
+
+updateTrainerUI();
+renderHandNotes();
+
+document.addEventListener('keydown',e=>{
+  if(document.querySelector('.modal-overlay.show')) return;
+  if(e.key==='n'||e.key==='N') newHand();
+  if(curHand){
+    const opts=curHand.sc.heroOpts;
+    if(e.key==='1'&&opts[0]) submitAnswer(opts[0]);
+    if(e.key==='2'&&opts[1]) submitAnswer(opts[1]);
+    if(e.key==='3'&&opts[2]) submitAnswer(opts[2]);
+  }
+});
+</script>
+</body>
+</html>
